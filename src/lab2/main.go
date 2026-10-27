@@ -1,17 +1,20 @@
 package main
-import ("fmt";
-)
 
-type Student struct {
-	name string
-	age int
-}
+import "fmt"
 
-func(s Student) printStudent() {
-	fmt.Println("Name: ", s.name)
-	fmt.Println("Age: ", s.age)
-}
-func main(){
-	Student1 := Student{name: "John", age: 20}
-	Student1.printStudent()
+func main() {
+	fmt.Println("Exercise 1:")
+	exercise1()
+	fmt.Println("Exercise 2:")
+	exercise2()
+	fmt.Println("Exercise 3:")
+	exercise3()
+	fmt.Println("Exercise 4:")
+	exercise4()
+	fmt.Println("Exercise 5:")
+	exercise5()
+	fmt.Println("Exercise 6:")
+	exercise6()
+	fmt.Println("Exercise 7:")
+	exercise7()
 }
