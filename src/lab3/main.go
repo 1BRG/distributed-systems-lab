@@ -16,4 +16,6 @@ func main() {
 	best_theta, min_delta := simulate(c_clock, s_clock, 10)
 	fmt.Printf("Best Theta: %v, Min Delta: %v\n", best_theta, min_delta)
 
+	fmt.Println("\nExercise 2:")
+
 }

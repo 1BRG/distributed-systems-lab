@@ -47,8 +47,8 @@ func measure(c_clock, s_clock *Clock) (theta, delta time.Duration) {
 }
 
 func simulate(c_clock *Clock, s_clock *Clock, iterations int) (best_theta, min_delta time.Duration) {
-	best_theta = time.Duration(1<<63 - 1) // Set to maximum possible duration
-	min_delta = time.Duration(1<<63 - 1)  // Set to maximum possible duration
+	best_theta = time.Duration(1<<63 - 1)
+	min_delta = time.Duration(1<<63 - 1)
 	for i := 0; i < iterations; i++ {
 		theta_i, delta_i := measure(c_clock, s_clock)
 		fmt.Printf("Measure %v with theta: %v and delta: %v\n", i, theta_i, delta_i)
