@@ -19,7 +19,7 @@ except ImportError:
 # ==============================================================================
 # BENCHMARK CONFIGURATION
 # ==============================================================================
-SEED = 42
+SEED = 26
 REPEATS = 3               # Number of runs per test (median is taken)
 TEMP_INPUT = "bench_input_tmp.txt"
 CSV_OUTPUT = "benchmark_results.csv"
@@ -256,24 +256,29 @@ def run_all_benchmarks(binary: str) -> list[dict]:
         })
 
     # --------------------------------------------------------------------------
-    # EXPERIMENT 4: QuadTree Tuning (depth & threshold on super_cluster)
+    # EXPERIMENT 4: QuadTree Tuning (vary maxDepth -> U-shaped curve / parabola)
     # --------------------------------------------------------------------------
-    depths = [4, 7, 10, 13, 16]
-    print("\n=== EXPERIMENT 4: QuadTree maxDepth Impact on Super-Cluster (N = 15000, rounds = 1) ===")
-    pts = generate_super_cluster(15000, box_size=20.0)
+    depths = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
+    print("\n=== EXPERIMENT 4: QuadTree maxDepth Impact on Dense Clusters (N = 15000, rounds = 1) ===")
+    # Using Gaussian clusters on box_size=500 with radius=25 and threshold=2
+    # so that maxDepth genuinely controls splitting from depth 2 up to 12:
+    # - At depth 2..4: quadrants (250..62.5) > radius (25) -> under-splitting (slow)
+    # - At depth 6..7: quadrants (15.6..7.8) < radius (25) -> optimal O(1) aggregation (minimum!)
+    # - At depth 9..12: quadrants (1.9..0.24) << radius (25) -> over-splitting overhead (slow again)
+    pts = generate_multi_cluster(15000, num_clusters=8, box_size=500.0, cluster_std=12.0)
     write_points_to_file(pts, TEMP_INPUT)
-    sh_ms, sh_rem = run_single_test(binary, "spatial", TEMP_INPUT, rounds=1, depth=10, threshold=8, radius=15.0)
+    sh_ms, sh_rem = run_single_test(binary, "spatial", TEMP_INPUT, rounds=1, depth=7, threshold=2, radius=25.0)
     for d in depths:
-        qt_ms, qt_rem = run_single_test(binary, "quadtree", TEMP_INPUT, rounds=1, depth=d, threshold=8, radius=15.0)
-        print(f"[depth={d:2d} | threshold=8] QT: {qt_ms:8.2f} ms (vs SH: {sh_ms:8.2f} ms)")
+        qt_ms, qt_rem = run_single_test(binary, "quadtree", TEMP_INPUT, rounds=1, depth=d, threshold=2, radius=25.0)
+        print(f"[depth={d:2d} | threshold=2] QT: {qt_ms:8.2f} ms (vs SH: {sh_ms:8.2f} ms)")
         results.append({
             "experiment": "vary_depth",
-            "distribution": "super_cluster",
+            "distribution": "dense_clusters",
             "N": 15000,
             "rounds": 1,
-            "radius": 15.0,
+            "radius": 25.0,
             "depth": d,
-            "threshold": 8,
+            "threshold": 2,
             "qt_ms": qt_ms,
             "sh_ms": sh_ms,
             "qt_remaining": qt_rem,
