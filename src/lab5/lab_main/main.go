@@ -1,8 +1,9 @@
-package lab5
+package main
 
 import (
 	"bufio"
 	"fmt"
+	"lab5"
 	"os"
 )
 
@@ -17,11 +18,11 @@ func main() {
 		fmt.Sscan(scanner.Text(), &n)
 	}
 
-	nodes := make([]Point, 0, n)
+	nodes := make([]lab5.Point, 0, n)
 	for scanner.Scan() {
 		var x, y float64
 		fmt.Sscan(scanner.Text(), &x, &y)
-		nodes = append(nodes, Point{X: x, Y: y})
+		nodes = append(nodes, lab5.Point{X: x, Y: y})
 	}
 
 	maxRounds := 100
@@ -29,6 +30,9 @@ func main() {
 	countThreshold := 4
 	radius := 15.0
 
-	remaining := RendezvousQuadTree(nodes, maxRounds, maxDepth, countThreshold, radius)
+	remaining := lab5.RendezvousQuadTree(nodes, maxRounds, maxDepth, countThreshold, radius)
 	fmt.Println("Number of remaining nodes:", remaining)
+
+	remainingSh := lab5.RendezvousSpatialHashing(nodes, maxRounds, radius)
+	fmt.Println("Number of remaining nodes:", remainingSh)
 }
